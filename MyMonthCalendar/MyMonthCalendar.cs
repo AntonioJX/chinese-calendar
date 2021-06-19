@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Text;
+using System.Linq;
 using System.Windows.Forms;
 using MyMonthCalendar.Properties;
 
@@ -14,6 +16,36 @@ namespace MyMonthCalendar
         #region 用到的类型
 
         #region SolarHolidayStruct
+
+        ///// <summary>
+        ///// 工作日/休息日
+        ///// </summary>
+        //public struct DayStruct
+        //{
+        //    public DateTime dateTime;
+        //    public int year;
+        //    public int month;
+        //    public int day;
+        //    public bool isWorkDay;
+
+        //    public DayStruct(DateTime _dateTime, bool _isWorkDay)
+        //    {
+        //        dateTime = _dateTime;
+        //        year = dateTime.Year;
+        //        month = dateTime.Month;
+        //        day = dateTime.Day;
+        //        isWorkDay = _isWorkDay;
+        //    }
+
+        //    public DayStruct(int _year,int _month,int _day,bool _isWorkDay)
+        //    {
+        //        dateTime = new DateTime(_year,_month,_day);
+        //        year = _year;
+        //        month = _month;
+        //        day = _day;
+        //        isWorkDay = _isWorkDay;
+        //    }
+        //}
 
         /// <summary>
         ///     公历节日
@@ -67,14 +99,16 @@ namespace MyMonthCalendar
             public bool hightLightS; //高亮显示公历部分
             public string holidayInfo; //节日信息
             public string lunarDay; //用来显示农历或节日
+            public bool isWorkDay;
 
-            public DayInfo(string _day, string _lunarDay, string _holidayInfo, bool _hightLightS, bool _hightLightL)
+            public DayInfo(string _day, string _lunarDay, string _holidayInfo, bool _hightLightS, bool _hightLightL,bool _isWorkDay)
             {
                 day = _day;
                 lunarDay = _lunarDay;
                 holidayInfo = _holidayInfo;
                 hightLightS = _hightLightS;
                 hightLightL = _hightLightL;
+                isWorkDay = _isWorkDay;
             }
         }
 
@@ -130,6 +164,8 @@ namespace MyMonthCalendar
             "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"
         };
 
+        private Dictionary<DateTime, bool> dictionaryDayType;
+
         private readonly DateTime MaxSolarDate = new DateTime(2100, 12, 31); //所支持的最大公历日期，这里包括了要显示部分下个月信息而减去的预留。
         private readonly DateTime MinSolarDate = new DateTime(1901, 3, 1); //所支持的最小公历日期，这里包括了要显示部分上个月信息而加上的预留。
         private SolidBrush brushFestival = new SolidBrush(Color.Crimson);
@@ -169,6 +205,8 @@ namespace MyMonthCalendar
         private Color trailingForeColor = Color.LightGray; //用于显示在月历上出现的上个月和下个月的颜色
         private Color weekBackColor = Color.OliveDrab; //星期的背景色
         private Color weekForeColor = Color.White; //星期的前景色
+        private Color workdayBackColor = Color.White;//工作日的背景色
+        private Color restdayBackColor = Color.GreenYellow;//休息日的背景色
 
         /// <summary>
         ///     用户选择了日期
@@ -280,6 +318,13 @@ namespace MyMonthCalendar
                 y = i/7;
                 LX = 8 + x*43;
                 LY = 41 + y*18;
+
+                var BX = 4 + x * 43;
+                var BY = 41 + y * 18;
+
+                //修改背景色
+                Color dayColor = dayInfo[i].isWorkDay ? workdayBackColor : restdayBackColor;
+                e.Graphics.FillRectangle(new SolidBrush(dayColor), BX, BY, 43, 18);
 
                 //修改字体颜色
                 Color _solarColor = dayInfo[i].hightLightS ? solarHolForeColor : dayForeColor;
@@ -742,6 +787,28 @@ namespace MyMonthCalendar
 
         #endregion
 
+        /// <summary>
+        /// 是否是平日
+        /// </summary>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        private bool IsStandardDay(ChineseCalendar.ChineseCalendar date)
+        {
+            switch (date.WeekDay)
+            {
+                case DayOfWeek.Monday:
+                case DayOfWeek.Tuesday:
+                case DayOfWeek.Wednesday:
+                case DayOfWeek.Thursday:
+                case DayOfWeek.Friday:
+                    return true;
+                case DayOfWeek.Saturday:
+                case DayOfWeek.Sunday:
+                    return false;
+                default: return false;
+            }
+        }
+
         #region GetIndex
 
         /// <summary>
@@ -843,6 +910,9 @@ namespace MyMonthCalendar
             else
                 dayInfo[i].hightLightL = false;
 
+            //平日默认为工作日
+            dayInfo[i].isWorkDay = IsStandardDay(date);
+            
             //要显示的重要节日
             //优先级24节气 < 公历节日 < 农历节日
 
@@ -851,7 +921,10 @@ namespace MyMonthCalendar
             {
                 dayInfo[i].lunarDay = st;
                 if (st == "清明")
+                {
                     dayInfo[i].hightLightS = true;
+                    dayInfo[i].isWorkDay = false;
+                }
             }
 
             //公历节日
@@ -863,6 +936,7 @@ namespace MyMonthCalendar
                     {
                         dayInfo[i].lunarDay = shs.HolidayName;
                         dayInfo[i].hightLightL = true;
+                        dayInfo[i].isWorkDay = false;
                         break;
                     }
                 }
@@ -877,12 +951,20 @@ namespace MyMonthCalendar
                     {
                         dayInfo[i].lunarDay = lhs.HolidayName;
                         dayInfo[i].hightLightS = true;
+                        dayInfo[i].isWorkDay = false;
                         break;
                     }
                 }
             }
-        }
 
+            //更新定制的工作日/休息日信息
+            if (dictionaryDayType != null)
+            {
+                var solarDate = date.SolarDate;
+                if (dictionaryDayType.ContainsKey(solarDate.Date))
+                    dayInfo[i].isWorkDay = dictionaryDayType[solarDate.Date];
+            }
+        }
         #endregion
 
         #region GetHoliday
@@ -1087,6 +1169,24 @@ namespace MyMonthCalendar
         #endregion
 
         #region 属性
+
+        /// <summary>
+        /// 定制 工作日/休息日 字典
+        /// </summary>
+        [Description("工作日/休息日")]
+        [Category("数据")]
+        public Dictionary<DateTime,bool> DictionaryDayType
+        {
+            get
+            {
+                return dictionaryDayType;
+            }
+            set
+            {
+                dictionaryDayType = value;
+                GetData();
+            }
+        }
 
         #region 行为
 
@@ -1335,6 +1435,40 @@ namespace MyMonthCalendar
                 Refresh();
             }
             get { return splitLinesColor; }
+        }
+
+        #endregion
+
+        #region 日期的背景色
+
+        /// <summary>
+        ///     工作日的背景色
+        /// </summary>
+        [Description("工作日的背景色")]
+        [Category("外观")]
+        public Color WorkdayBackColor
+        {
+            set
+            {
+                workdayBackColor = value;
+                Refresh();
+            }
+            get { return workdayBackColor; }
+        }
+
+        /// <summary>
+        ///     休息日的背景色
+        /// </summary>
+        [Description("休息日的背景色")]
+        [Category("外观")]
+        public Color RestdayBackColor
+        {
+            set
+            {
+                restdayBackColor = value;
+                Refresh();
+            }
+            get { return restdayBackColor; }
         }
 
         #endregion

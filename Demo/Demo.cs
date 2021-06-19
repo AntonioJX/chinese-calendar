@@ -13,6 +13,18 @@ namespace Demo
         public Demo()
         {
             InitializeComponent();
+
+
+        }
+
+        private void Demo_Shown(object sender, EventArgs e)
+        {
+            myMonthCalendar1.DictionaryDayType = new Dictionary<DateTime, bool>()
+            {
+                {new DateTime(2021,6,17),false },
+                {new DateTime(2021,6,18),false }
+            };
+            myMonthCalendar1.Refresh();
         }
     }
 }

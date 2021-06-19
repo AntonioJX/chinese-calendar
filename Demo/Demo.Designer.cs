@@ -30,8 +30,8 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.myDateTimePicker1 = new MyDateTimePicker.MyDateTimePicker();
             this.myMonthCalendar1 = new MyMonthCalendar.MyMonthCalendar();
+            this.myDateTimePicker1 = new MyDateTimePicker.MyDateTimePicker();
             this.SuspendLayout();
             // 
             // label1
@@ -47,18 +47,39 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(42, 236);
+            this.label2.Location = new System.Drawing.Point(42, 233);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 17);
             this.label2.TabIndex = 3;
             this.label2.Text = "DateTimePicker";
             // 
+            // myMonthCalendar1
+            // 
+            this.myMonthCalendar1.BackColor = System.Drawing.Color.White;
+            this.myMonthCalendar1.DayForeColor = System.Drawing.Color.Black;
+            this.myMonthCalendar1.DictionaryDayType = null;
+            this.myMonthCalendar1.Location = new System.Drawing.Point(45, 41);
+            this.myMonthCalendar1.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
+            this.myMonthCalendar1.MinDate = new System.DateTime(1901, 3, 1, 0, 0, 0, 0);
+            this.myMonthCalendar1.Name = "myMonthCalendar1";
+            this.myMonthCalendar1.RestdayBackColor = System.Drawing.Color.Wheat;
+            this.myMonthCalendar1.SelectedSolarDate = new System.DateTime(2015, 1, 28, 0, 0, 0, 0);
+            this.myMonthCalendar1.Size = new System.Drawing.Size(307, 170);
+            this.myMonthCalendar1.SplitLinesColor = System.Drawing.Color.OliveDrab;
+            this.myMonthCalendar1.SplitLinesStyle = MyMonthCalendar.MyMonthCalendar.SplitLStyle.None;
+            this.myMonthCalendar1.TabIndex = 4;
+            this.myMonthCalendar1.TitleColor = System.Drawing.Color.Black;
+            this.myMonthCalendar1.TrailingForeColor = System.Drawing.Color.LightGray;
+            this.myMonthCalendar1.WeekBackColor = System.Drawing.Color.OliveDrab;
+            this.myMonthCalendar1.WeekForeColor = System.Drawing.Color.White;
+            this.myMonthCalendar1.WorkdayBackColor = System.Drawing.Color.White;
+            // 
             // myDateTimePicker1
             // 
             this.myDateTimePicker1.BackColor = System.Drawing.Color.White;
             this.myDateTimePicker1.DayForeColor = System.Drawing.Color.Black;
-            this.myDateTimePicker1.Location = new System.Drawing.Point(45, 253);
+            this.myDateTimePicker1.Location = new System.Drawing.Point(45, 250);
             this.myDateTimePicker1.Margin = new System.Windows.Forms.Padding(0);
             this.myDateTimePicker1.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
             this.myDateTimePicker1.MinDate = new System.DateTime(1901, 3, 1, 0, 0, 0, 0);
@@ -74,37 +95,20 @@
             this.myDateTimePicker1.WeekBackColor = System.Drawing.Color.OliveDrab;
             this.myDateTimePicker1.WeekForeColor = System.Drawing.Color.White;
             // 
-            // myMonthCalendar1
-            // 
-            this.myMonthCalendar1.BackColor = System.Drawing.Color.White;
-            this.myMonthCalendar1.DayForeColor = System.Drawing.Color.Black;
-            this.myMonthCalendar1.Location = new System.Drawing.Point(45, 41);
-            this.myMonthCalendar1.MaxDate = new System.DateTime(2100, 12, 31, 0, 0, 0, 0);
-            this.myMonthCalendar1.MinDate = new System.DateTime(1901, 3, 1, 0, 0, 0, 0);
-            this.myMonthCalendar1.Name = "myMonthCalendar1";
-            this.myMonthCalendar1.SelectedSolarDate = new System.DateTime(2015, 1, 28, 0, 0, 0, 0);
-            this.myMonthCalendar1.Size = new System.Drawing.Size(307, 170);
-            this.myMonthCalendar1.SplitLinesColor = System.Drawing.Color.OliveDrab;
-            this.myMonthCalendar1.SplitLinesStyle = MyMonthCalendar.MyMonthCalendar.SplitLStyle.None;
-            this.myMonthCalendar1.TabIndex = 4;
-            this.myMonthCalendar1.TitleColor = System.Drawing.Color.Black;
-            this.myMonthCalendar1.TrailingForeColor = System.Drawing.Color.LightGray;
-            this.myMonthCalendar1.WeekBackColor = System.Drawing.Color.OliveDrab;
-            this.myMonthCalendar1.WeekForeColor = System.Drawing.Color.White;
-            // 
             // Demo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(400, 313);
+            this.ClientSize = new System.Drawing.Size(399, 294);
             this.Controls.Add(this.myMonthCalendar1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.myDateTimePicker1);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Demo";
             this.Text = "Demo";
+            this.Shown += new System.EventHandler(this.Demo_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
